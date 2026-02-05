@@ -9,7 +9,7 @@ const Splash = () => {
   // Redirect after scroll
   useEffect(() => {
     const handleScroll = () => {
-      navigate("/home"); // redirect to Home
+      navigate("/login"); // redirect to Login
     };
 
     window.addEventListener("scroll", handleScroll);

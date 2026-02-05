@@ -3,9 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [formType, setFormType] = useState("login"); // login, reset, register
-
-  // Common fields
+  const [formType, setFormType] = useState("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,7 +11,7 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  // ================= LOGIN =================
+  // LOGIN
   const handleLogin = async () => {
     try {
       const res = await axios.post("http://localhost:5000/api/auth/login", {
@@ -21,17 +19,17 @@ const Login = () => {
         password,
       });
 
-      // Save token
       localStorage.setItem("token", res.data.token);
-
       alert("Login successful");
-      navigate("/providers"); // protected page
+
+      navigate("/role"); // 👈 GO TO ROLE PAGE
+
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
     }
   };
 
-  // ================= REGISTER =================
+  // REGISTER
   const handleRegister = async () => {
     if (password !== confirmPassword) {
       return alert("Passwords do not match");
@@ -51,204 +49,109 @@ const Login = () => {
     }
   };
 
-  // ================= RESET (UI ONLY) =================
-  const handleReset = () => {
+  // RESET PASSWORD
+  const handleReset = async () => {
     if (password !== confirmPassword) {
       return alert("Passwords do not match");
     }
 
-    alert("Password reset feature UI added (backend can be added later)");
-    setFormType("login");
+    try {
+      await axios.post("http://localhost:5000/api/auth/reset-password", {
+        email,
+        newPassword: password,
+      });
+
+      alert("Password updated successfully");
+      setFormType("login");
+    } catch (err) {
+      alert(err.response?.data?.message || "Reset failed");
+    }
   };
 
   return (
-    <div
-      className="d-flex justify-content-center align-items-center vh-100"
-      style={{ backgroundColor: "#f0f4f8" }}
-    >
-      <div
-        className="card shadow-lg"
-        style={{ width: "100%", maxWidth: "400px", borderRadius: "15px" }}
-      >
-        {/* Header */}
-        <div
-          className="card-header text-center text-white fw-bold"
-          style={{
-            backgroundColor: "#33a1e0",
-            fontSize: "1.2rem",
-            borderTopLeftRadius: "15px",
-            borderTopRightRadius: "15px",
-          }}
-        >
+    <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: "#f0f4f8" }}>
+      <div className="card shadow-lg" style={{ width: "100%", maxWidth: "400px", borderRadius: "15px" }}>
+        
+        <div className="card-header text-center text-white fw-bold" style={{ backgroundColor: "#33a1e0" }}>
           {formType === "login" && "Login to HomeEase"}
-          {formType === "reset" && "Reset Password"}
           {formType === "register" && "Register for HomeEase"}
+          {formType === "reset" && "Reset Password"}
         </div>
 
         <div className="card-body p-4">
-          {/* ========== LOGIN ========== */}
+
           {formType === "login" && (
             <>
-              <div className="mb-3">
-                <label className="form-label fw-bold">Email Address</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  placeholder="example@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
+              <input className="form-control mb-3" type="email" placeholder="Email"
+                value={email} onChange={(e) => setEmail(e.target.value)} />
 
-              <div className="mb-3">
-                <label className="form-label fw-bold">Password</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
+              <input className="form-control mb-3" type="password" placeholder="Password"
+                value={password} onChange={(e) => setPassword(e.target.value)} />
 
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <span
-                  className="text-primary"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setFormType("reset")}
-                >
-                  Forgot password?
-                </span>
-              </div>
+              <p className="text-primary text-end" style={{ cursor: "pointer" }}
+                onClick={() => setFormType("reset")}>
+                Forgot password?
+              </p>
 
-              <button
-                className="btn"
-                style={{ backgroundColor: "#33a1e0", color: "#fff", width: "100%" }}
-                onClick={handleLogin}
-              >
+              <button className="btn w-100" style={{ backgroundColor: "#33a1e0", color: "#fff" }}
+                onClick={handleLogin}>
                 Login
               </button>
 
-              <p className="text-center mt-3 mb-0">
+              <p className="text-center mt-3">
                 New user?{" "}
-                <span
-                  className="fw-bold"
-                  style={{ color: "#33a1e0", cursor: "pointer" }}
-                  onClick={() => setFormType("register")}
-                >
+                <span style={{ color: "#33a1e0", cursor: "pointer", fontWeight: "bold" }}
+                  onClick={() => setFormType("register")}>
                   Register
                 </span>
               </p>
             </>
           )}
 
-          {/* ========== RESET PASSWORD (UI) ========== */}
-          {formType === "reset" && (
-            <>
-              <div className="mb-3">
-                <label className="form-label fw-bold">New Password</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="Enter new password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-
-              <div className="mb-3">
-                <label className="form-label fw-bold">Confirm Password</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="Confirm new password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </div>
-
-              <button
-                className="btn"
-                style={{ backgroundColor: "#33a1e0", color: "#fff", width: "100%" }}
-                onClick={handleReset}
-              >
-                Reset Password
-              </button>
-
-              <p
-                className="text-center mt-3 mb-0"
-                style={{ cursor: "pointer", color: "#33a1e0" }}
-                onClick={() => setFormType("login")}
-              >
-                Back to Login
-              </p>
-            </>
-          )}
-
-          {/* ========== REGISTER ========== */}
           {formType === "register" && (
             <>
-              <div className="mb-3">
-                <label className="form-label fw-bold">Full Name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
+              <input className="form-control mb-2" placeholder="Full Name"
+                value={name} onChange={(e) => setName(e.target.value)} />
 
-              <div className="mb-3">
-                <label className="form-label fw-bold">Email Address</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  placeholder="example@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
+              <input className="form-control mb-2" placeholder="Email"
+                value={email} onChange={(e) => setEmail(e.target.value)} />
 
-              <div className="mb-3">
-                <label className="form-label fw-bold">Password</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="Enter password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
+              <input className="form-control mb-2" type="password" placeholder="Password"
+                value={password} onChange={(e) => setPassword(e.target.value)} />
 
-              <div className="mb-3">
-                <label className="form-label fw-bold">Confirm Password</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="Confirm password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </div>
+              <input className="form-control mb-3" type="password" placeholder="Confirm Password"
+                value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
 
-              <button
-                className="btn"
-                style={{ backgroundColor: "#33a1e0", color: "#fff", width: "100%" }}
-                onClick={handleRegister}
-              >
+              <button className="btn w-100" style={{ backgroundColor: "#33a1e0", color: "#fff" }}
+                onClick={handleRegister}>
                 Register
               </button>
 
-              <p
-                className="text-center mt-3 mb-0"
-                style={{ cursor: "pointer", color: "#33a1e0" }}
-                onClick={() => setFormType("login")}
-              >
+              <p className="text-center mt-3" style={{ cursor: "pointer", color: "#33a1e0" }}
+                onClick={() => setFormType("login")}>
                 Back to Login
               </p>
             </>
           )}
+
+          {formType === "reset" && (
+            <>
+              <input className="form-control mb-2" placeholder="Email"
+                value={email} onChange={(e) => setEmail(e.target.value)} />
+
+              <input className="form-control mb-2" type="password" placeholder="New Password"
+                value={password} onChange={(e) => setPassword(e.target.value)} />
+
+              <input className="form-control mb-3" type="password" placeholder="Confirm Password"
+                value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+
+              <button className="btn w-100" style={{ backgroundColor: "#33a1e0", color: "#fff" }}
+                onClick={handleReset}>
+                Reset Password
+              </button>
+            </>
+          )}
+
         </div>
       </div>
     </div>
