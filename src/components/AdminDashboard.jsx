@@ -15,12 +15,37 @@ const AdminDashboard = () => {
   });
 
   const [reviews, setReviews] = useState([]);
+  const [serviceStats, setServiceStats] = useState([]);
 
   // ---------------- FETCH DATA ----------------
-  useEffect(() => {
+  
+const fetchServiceWiseStats = async () => {
+  const res = await axios.get(
+    "http://localhost:5000/api/admin/service-wise-stats"
+  );
+  setServiceStats(res.data);
+};
+
+
+
+useEffect(() => {
+  // initial load
+  fetchStats();
+  fetchReviews();
+  fetchServiceWiseStats();
+
+  // auto refresh every 5 seconds
+  const interval = setInterval(() => {
     fetchStats();
     fetchReviews();
-  }, []);
+    fetchServiceWiseStats();
+  }, 5000);
+
+  return () => clearInterval(interval);
+}, []);
+
+
+
 
   const fetchStats = async () => {
     try {
@@ -95,6 +120,36 @@ const AdminDashboard = () => {
         <p>Online Payments: ₹ {stats.payments.online}</p>
         <p>Cash Payments: ₹ {stats.payments.cash}</p>
       </div>
+
+
+          {/* SERVICE-WISE DETAILS */}
+<div className="card shadow p-4 mb-4">
+  <h4 className="mb-4">Service-wise Dashboard</h4>
+
+  <div className="row">
+    {serviceStats.length === 0 && (
+      <p className="text-muted">No service data available</p>
+    )}
+
+    {serviceStats.map((s, index) => (
+      <div key={index} className="col-md-6 mb-4">
+        <div className="border rounded p-3 h-100">
+          <h5 className="fw-bold">{s.service}</h5>
+
+          <p><b>Total Customers:</b> {s.totalCustomers}</p>
+          <p><b>Total Bookings:</b> {s.totalBookings}</p>
+          <p><b>Total Revenue:</b> ₹ {s.revenue}</p>
+
+          <hr />
+
+          <p><b>Online Payments:</b> ₹ {s.onlinePayments}</p>
+          <p><b>Cash Payments:</b> ₹ {s.cashPayments}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
 
       {/* REVIEW ANALYTICS */}
       <div className="card shadow p-4">
