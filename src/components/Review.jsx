@@ -1,130 +1,102 @@
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const Review = () => {
-  const [reviews, setReviews] = useState([
-    {
-      name: "Ramesh Kumar",
-      rating: 5,
-      comment: "Excellent plumbing service. Quick response!"
-    },
-    {
-      name: "Anjali S",
-      rating: 4,
-      comment: "Electrician arrived on time and fixed the issue."
-    }
-  ]);
-
-  const [name, setName] = useState("");
-  const [rating, setRating] = useState("5");
+  const [providers, setProviders] = useState([]);
+  const [providerId, setProviderId] = useState("");
+  const [userName, setUserName] = useState("");
+  const [rating, setRating] = useState("");
   const [comment, setComment] = useState("");
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/providers")
+      .then((res) => setProviders(res.data))
+      .catch((err) => console.log(err));
+  }, []);
+
+  const submitReview = async (e) => {
     e.preventDefault();
 
-    const newReview = {
-      name,
-      rating,
-      comment
-    };
+    if (!providerId || !userName || !rating || !comment) {
+      alert("Fill all fields");
+      return;
+    }
 
-    setReviews([newReview, ...reviews]);
+    try {
+      await axios.post("http://localhost:5000/api/reviews", {
+        providerId,
+        userName,
+        rating,
+        comment,
+      });
 
-    // Clear form
-    setName("");
-    setRating("5");
-    setComment("");
+      alert("Review added successfully");
+
+      setProviderId("");
+      setUserName("");
+      setRating("");
+      setComment("");
+    } catch (err) {
+      alert("Failed to add review");
+    }
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: "#f0f4f8",
-        minHeight: "100vh",
-        paddingTop: "30px",
-        paddingBottom: "30px"
-      }}
-    >
-      <div className="container">
+    <div className="container mt-4">
+      <h3 className="text-center">Add Review</h3>
 
-        <h3 className="text-center fw-bold mb-4">User Reviews</h3>
+      <form onSubmit={submitReview} className="card p-3 shadow mt-3">
 
-        {/* Add Review Form */}
-        <div className="card shadow-sm mb-4">
-          <div
-            className="card-header text-white fw-bold"
-            style={{ backgroundColor: "#33a1e0" }}
-          >
-            Add Your Review
-          </div>
-          <div className="card-body">
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label className="form-label">Your Name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
+        <label>Select Provider</label>
+        <select
+          className="form-control mb-2"
+          value={providerId}
+          onChange={(e) => setProviderId(e.target.value)}
+        >
+          <option value="">-- Select Provider --</option>
+          {providers.map((p) => (
+            <option key={p._id} value={p._id}>
+              {p.name} ({p.serviceType})
+            </option>
+          ))}
+        </select>
 
-              <div className="mb-3">
-                <label className="form-label">Rating</label>
-                <select
-                  className="form-select"
-                  value={rating}
-                  onChange={(e) => setRating(e.target.value)}
-                >
-                  <option value="5">⭐⭐⭐⭐⭐</option>
-                  <option value="4">⭐⭐⭐⭐</option>
-                  <option value="3">⭐⭐⭐</option>
-                  <option value="2">⭐⭐</option>
-                  <option value="1">⭐</option>
-                </select>
-              </div>
+        <label>Your Name</label>
+        <input
+          type="text"
+          className="form-control mb-2"
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
+        />
 
-              <div className="mb-3">
-                <label className="form-label">Your Review</label>
-                <textarea
-                  className="form-control"
-                  rows="3"
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  required
-                ></textarea>
-              </div>
+        <label>Rating</label>
+        <select
+          className="form-control mb-2"
+          value={rating}
+          onChange={(e) => setRating(e.target.value)}
+        >
+          <option value="">Select rating</option>
+          <option value="1">1 ⭐</option>
+          <option value="2">2 ⭐⭐</option>
+          <option value="3">3 ⭐⭐⭐</option>
+          <option value="4">4 ⭐⭐⭐⭐</option>
+          <option value="5">5 ⭐⭐⭐⭐⭐</option>
+        </select>
 
-              <button
-                type="submit"
-                className="btn text-white"
-                style={{ backgroundColor: "#33a1e0" }}
-              >
-                Submit Review
-              </button>
-            </form>
-          </div>
-        </div>
+        <label>Comment</label>
+        <textarea
+          className="form-control mb-3"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+        />
 
-        {/* Display Reviews */}
-        {reviews.map((review, index) => (
-          <div key={index} className="card shadow-sm mb-3">
-            <div className="card-body">
-              <h6 className="fw-bold">{review.name}</h6>
-              <p className="mb-1">{review.comment}</p>
-              <small className="text-muted">
-                {"⭐".repeat(review.rating)}
-              </small>
-            </div>
-          </div>
-        ))}
-
-      </div>
+        <button className="btn btn-success">Submit Review</button>
+      </form>
     </div>
   );
 };
 
 export default Review;
+
