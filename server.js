@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 
+
 console.log("🚨 SERVER.JS IS RUNNING 🚨");
 
 dotenv.config();
@@ -16,9 +17,15 @@ app.use(express.json());
 // ================= ROUTES =================
 const authRoutes = require("./routes/authRoutes");
 const providerRoutes = require("./routes/providerRoutes");
+const bookingRoutes = require("./routes/bookingRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/providers", providerRoutes);
+app.use("/api/bookings", bookingRoutes);
+app.use("/api/admin", adminRoutes);
+
 
 // ================= TEST ROUTE =================
 app.get("/", (req, res) => {

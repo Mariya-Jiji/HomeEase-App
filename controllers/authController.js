@@ -5,11 +5,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 // REGISTER
-console.log("🔥 REGISTER API HIT 🔥");
+/*console.log("🔥 REGISTER API HIT 🔥");*/
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, password } = req.body;
+    const email = req.body.email.toLowerCase().trim();
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -34,11 +35,16 @@ exports.register = async (req, res) => {
   }
 };
 //LOGIN
+
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    console.log("🔥 LOGIN API HIT");
+
+    const password = req.body.password;
+    const email = req.body.email.toString().toLowerCase().trim();
 
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(400).json({
         message: "User not registered"
@@ -46,6 +52,7 @@ exports.login = async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
+
     if (!isMatch) {
       return res.status(400).json({
         message: "Invalid credentials"
@@ -60,12 +67,16 @@ exports.login = async (req, res) => {
 
     res.json({
       message: "Login successful",
-      token
+      token,
+      userId: user._id   // ✅ HERE
     });
+
   } catch (err) {
+    console.error("LOGIN ERROR:", err);
     res.status(500).json({ message: err.message });
   }
 };
+
 
 
 
