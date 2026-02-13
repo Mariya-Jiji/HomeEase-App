@@ -10,7 +10,8 @@ import Review from "./components/Review";
 import Role from "./components/Role";
 import Providers from "./components/Providers";
 import Customer from "./components/Customer";
-import Admin from "./components/Admin";
+import AdminLogin from "./components/AdminLogin"; // 👈 Admin login pageimport 
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./components/AdminDashboard";
 import Booking from "./components/Booking";
@@ -21,13 +22,15 @@ function App() {
       <Navbar />
 
       <Routes>
+        {/* Public routes */}
         <Route path="/" element={<Splash />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/admin-login" element={<AdminLogin />} /> {/* 👈 NEW */}
         <Route path="/about" element={<About />} />
         <Route path="/review" element={<Review />} />
 
-        {/* Role page – ONLY after login */}
+        {/* Protected routes (after login) */}
         <Route
           path="/role"
           element={
@@ -36,6 +39,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route path="/admin-login" element={<AdminLogin />} />
+
 
         <Route
           path="/providers"
@@ -56,40 +62,27 @@ function App() {
         />
 
         <Route
-  path="/admin-dashboard"
-  element={
-    <ProtectedRoute>
-      <AdminDashboard />
-    </ProtectedRoute>
-  }
-/>
-<Route
-  path="/customer"
-  element={
-    <ProtectedRoute>
-      <Customer />
-    </ProtectedRoute>
-  }
-/>
+          path="/booking"
+          element={
+            <ProtectedRoute>
+              <Booking />
+            </ProtectedRoute>
+          }
+        />
 
-<Route
-  path="/booking"
-  element={
-    <ProtectedRoute>
-      <Booking />
-    </ProtectedRoute>
-  }
-/>
-
+        {/* Admin dashboard (protected) */}
+        <Route
+          path="/admin-dashboard"
+          element={
+            <AdminProtectedRoute>
+              <AdminDashboard />
+            </AdminProtectedRoute>
+          }
+        />
 
       </Routes>
     </>
-  
-
-
-
   );
 }
 
 export default App;
-

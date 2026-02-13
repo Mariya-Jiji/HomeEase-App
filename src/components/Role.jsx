@@ -9,7 +9,7 @@ const Role = () => {
 
     if (role === "customer") navigate("/customer");
     if (role === "provider") navigate("/providers");
-    if (role === "admin") navigate("/admin-dashboard");
+    if (role === "admin") navigate("/admin-login");
   };
 
   return (
