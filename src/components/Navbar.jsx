@@ -1,43 +1,30 @@
-
-import React from "react";
 import { Link } from "react-router-dom";
 
-const Navbar = () => {
+function Navbar() {
+  const token = localStorage.getItem("token");
+
   return (
-    <nav
-  className="navbar navbar-expand-lg navbar-dark"
-  style={{ backgroundColor: "#33a1e0" }}
->
-      <div className="container">
+    <nav style={{ padding: "15px", background: "#222", color: "white" }}>
+      <Link to="/" style={{ color: "white", marginRight: "20px" }}>
+        HomeEase
+      </Link>
 
-        <Link className="navbar-brand fw-bold text-black" to="/">
-          HomeEase
+      {token ? (
+        <button
+          onClick={() => {
+            localStorage.removeItem("token");
+            window.location.reload();
+          }}
+        >
+          Logout
+        </button>
+      ) : (
+        <Link to="/login" style={{ color: "white" }}>
+          Login
         </Link>
-
-        <div className="ms-auto d-flex gap-3">
-            <Link className="nav-link text-black" to="/">
-            </Link>
-
-          <Link className="nav-link text-black" to="/home">
-            Home
-          </Link>
-          <Link className="nav-link text-black" to="/login">
-            Login
-          </Link>
-          <Link className="nav-link text-black" to="/about">
-            About
-          </Link>
-          <Link className="nav-link text-black" to="/review">
-            Reviews
-          </Link>
-          <Link className="nav-link text-black" to="/role">
-            Role
-          </Link>
-        </div>
-
-      </div>
+      )}
     </nav>
   );
-};
+}
 
 export default Navbar;
