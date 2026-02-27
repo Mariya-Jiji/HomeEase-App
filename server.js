@@ -1,44 +1,29 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const dotenv = require("dotenv");
-
-
-console.log("🚨 SERVER.JS IS RUNNING 🚨");
-
-dotenv.config();
+require("dotenv").config();
 
 const app = express();
 
-// ================= MIDDLEWARE =================
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// ================= ROUTES =================
-const authRoutes = require("./routes/authRoutes");
-const providerRoutes = require("./routes/providerRoutes");
-const bookingRoutes = require("./routes/bookingRoutes");
-const adminRoutes = require("./routes/adminRoutes");
+// Routes
+const serviceRoutes = require("./routes/serviceRoutes");
+app.use("/api/services", serviceRoutes);
 
-
-app.use("/api/auth", authRoutes);
-app.use("/api/providers", providerRoutes);
-app.use("/api/bookings", bookingRoutes);
-app.use("/api/admin", adminRoutes);
-
-
-// ================= TEST ROUTE =================
+// Test route
 app.get("/", (req, res) => {
-  res.send("HomeEase Backend is Running 🚀");
+  res.send("HomeEase Backend Running 🚀");
 });
 
-// ================= DATABASE =================
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
+// MongoDB connection
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB Atlas Connected"))
+  .catch(err => console.error("❌ MongoDB Error:", err));
 
-// ================= SERVER =================
+// Server start
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
