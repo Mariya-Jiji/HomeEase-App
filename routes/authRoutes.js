@@ -1,18 +1,19 @@
 
+
 const express = require("express");
 const router = express.Router();
 
+const authController = require("../controllers/authController");
 
-const { register, login, resetPassword } = require("../controllers/authController");
 
-// TEST route (important)
-router.get("/test", (req, res) => {
-  res.send("Auth route working");
-});
+router.post("/register", authController.register);
+router.post("/verify-otp", authController.verifyOtp);
 
-router.post("/register", register);
-router.post("/login", login);
-router.post("/reset-password", resetPassword);
-
+router.post("/login", authController.login);
+router.post("/forgot-password", authController.forgotPassword);
+router.post("/reset-password", authController.resetPassword);
 
 module.exports = router;
+
+
+

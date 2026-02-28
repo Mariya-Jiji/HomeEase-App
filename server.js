@@ -43,11 +43,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const bookingRoutes = require("./routes/bookingRoutes");
-
-
-
-
-
+const reviewRoutes = require("./routes/reviewRoutes");
 
 
 
@@ -63,6 +59,9 @@ app.use(express.json());
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/providers", require("./routes/providerRoutes"));
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/reviews", reviewRoutes);
+
+
 
 // Test route
 app.get("/", (req, res) => {
