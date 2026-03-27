@@ -23,6 +23,8 @@ app.use('/api/admin', require('./routes/admin'));
 const complaintsRoutes = require('./routes/complaints');
 app.use('/api/complaints', complaintsRoutes);
 
+app.use('/api/chat', require('./routes/chat'));
+
 
 app.listen(process.env.PORT, () =>
   console.log(`Server running on port ${process.env.PORT}`)

@@ -19,7 +19,7 @@ router.get('/providers', auth, adminOnly, async (req, res) => {
   }
 });
 
-// Approve or reject provider
+// Approve or revoke provider
 router.put('/providers/:id/approve', auth, adminOnly, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(
@@ -28,6 +28,16 @@ router.put('/providers/:id/approve', auth, adminOnly, async (req, res) => {
       { new: true }
     );
     res.json(user);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+});
+
+// Reject (Delete) provider
+router.delete('/providers/:id', auth, adminOnly, async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ msg: 'Provider rejected and deleted' });
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
